@@ -1,6 +1,6 @@
-<# 
+<#
 .SYNOPSIS
-    NexoraSkills installer — OpenCode + Claude Code in one step for Windows.
+    NexoraSkills installer - OpenCode + Claude Code in one step for Windows.
 
 .DESCRIPTION
     Installs all Nexora skills for OpenCode and/or Claude Code.
@@ -10,7 +10,7 @@
     Installs at user level (default). Covers OpenCode and Claude.
 
 .PARAMETER Project
-    Installs in the current project (./.opencode/skills and ./.claude/skills).
+    Installs in the current project (./.opencode/skills, ./.claude/skills).
 
 .PARAMETER OpencodeOnly
     Only installs OpenCode destinations.
@@ -67,7 +67,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $REPO_URL = "https://github.com/Nexora-Company/NexoraSkills.git"
-$SOURCE_DIR = $env:NEXORA_SKILLS_DIR ?? "$env:USERPROFILE\.local\share\nexora-skills"
+$SOURCE_DIR = if ($env:NEXORA_SKILLS_DIR) { $env:NEXORA_SKILLS_DIR } else { "$env:USERPROFILE\.local\share\nexora-skills" }
 
 $MODE = "global"
 $SCOPE = "all"
@@ -80,7 +80,7 @@ if ($Copy) { $LINK_MODE = "copy" }
 
 function Print-Help {
     @"
-NexoraSkills installer — instala todas las skills en OpenCode y Claude Code.
+NexoraSkills installer - instala todas las skills en OpenCode y Claude Code.
 
 Uso:
   install.ps1 [opciones]
@@ -102,8 +102,8 @@ Desde clon local:
   .\NexoraSkills\install.ps1
 
 Variables:
-  \$env:NEXORA_SKILLS_DIR   Dónde clonar/actualizar el repo (por defecto ~\.local\share\nexora-skills).
-  \$env:NEXORA_SKILLS_SRC   Usa un clon local existente como fuente en vez de clonar.
+  `$env:NEXORA_SKILLS_DIR`   Donde clonar/actualizar el repo (por defecto ~\.local\share\nexora-skills).
+  `$env:NEXORA_SKILLS_SRC`   Usa un clon local existente como fuente en vez de clonar.
 "@
 }
 
@@ -115,8 +115,8 @@ function Resolve-Source {
         return $env:NEXORA_SKILLS_SRC
     }
     # Si este script vive dentro del repo (./install.ps1 de un clon), usa ese clon.
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-    if (Test-Path "$scriptDir\README.md" -and (Test-Path "$scriptDir\git-release" -PathType Container)) {
+    $scriptDir = Split-Path -Parent $PSCommandPath
+    if ((Test-Path "$scriptDir\README.md") -and (Test-Path "$scriptDir\git-release" -PathType Container)) {
         return $scriptDir
     }
     return $SOURCE_DIR
@@ -126,7 +126,7 @@ $SRC = Resolve-Source
 
 function Sync-Repo {
     if ($env:NEXORA_SKILLS_SRC) { return }
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+    $scriptDir = Split-Path -Parent $PSCommandPath
     if ($SRC -eq $scriptDir) { return }
 
     if (Test-Path "$SRC\.git" -PathType Container) {
@@ -233,7 +233,7 @@ foreach ($target in $targets) {
 }
 
 if ($Uninstall) {
-    Write-Host "Desinstalación completa."
+    Write-Host "Desinstalacion completa."
 } else {
     Write-Host "Instaladas: $($skills -join ', ')"
     Write-Host "OpenCode: usa @<skill> o la herramienta skill. Claude: usa /<skill>."
