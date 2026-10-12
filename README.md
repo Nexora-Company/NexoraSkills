@@ -6,6 +6,8 @@ Colección oficial de skills de Nexora para OpenCode y Claude Code. Una sola fue
 [![Skills: 5](https://img.shields.io/badge/skills-5-red.svg)](#skills)
 [![OpenCode](https://img.shields.io/badge/OpenCode-compatible-black.svg)](https://opencode.ai/v2/docs/skills)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-orange.svg)](https://code.claude.com/docs/en/skills.md)
+[![Windows](https://img.shields.io/badge/Windows-compatible-0078D6.svg)](install.ps1)
+[![Linux/macOS](https://img.shields.io/badge/Linux%2FmacOS-compatible-1A1A1A.svg)](install.sh)
 
 ## Propósito e integración
 
@@ -23,7 +25,8 @@ Nomenclatura: se respeta la escritura oficial `Nexora` y el catálogo definido e
 NexoraSkills/
 ├── README.md
 ├── LICENSE                  # Apache-2.0
-├── install.sh               # instalador único OpenCode + Claude
+├── install.sh               # instalador único OpenCode + Claude (Linux/macOS)
+├── install.ps1              # instalador único OpenCode + Claude (Windows PowerShell)
 ├── .gitignore
 ├── git-release/
 │   └── SKILL.md
@@ -55,15 +58,21 @@ Todas declaran `license: Apache-2.0` y `compatibility: opencode, claude-code` en
 
 ### Instalación única (OpenCode + Claude, global)
 
+**Linux / macOS (bash):**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.sh | bash
 ```
 
-Esto clona a `~/.local/share/nexora-skills` y enlaza las 5 skills en:
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 | iex
+```
 
-- `~/.config/opencode/skills/` (OpenCode global)
-- `~/.claude/skills/` (Claude personal + compatibilidad OpenCode)
-- `~/.agents/skills/` (compatibilidad OpenCode)
+Esto clona a `~/.local/share/nexora-skills` (Linux/macOS) o `~\.local\share\nexora-skills` (Windows) y enlaza las 5 skills en:
+
+- `~/.config/opencode/skills/` / `%APPDATA%\opencode\skills\` (OpenCode global)
+- `~/.claude/skills/` / `~\.claude\skills\` (Claude personal + compatibilidad OpenCode)
+- `~/.agents/skills/` / `~\.agents\skills\` (compatibilidad OpenCode)
 
 Actualizar después:
 
@@ -71,36 +80,68 @@ Actualizar después:
 git -C ~/.local/share/nexora-skills pull --ff-only
 ```
 
+```powershell
+git -C ~\.local\share\nexora-skills pull --ff-only
+```
+
 Los symlinks apuntan al clon, así que no hay que reinstalar.
 
 ### Desde clon local
 
+**Linux / macOS:**
 ```bash
 git clone https://github.com/Nexora-Company/NexoraSkills.git
 ./NexoraSkills/install.sh
 ```
 
+**Windows:**
+```powershell
+git clone https://github.com/Nexora-Company/NexoraSkills.git
+.\NexoraSkills\install.ps1
+```
+
 ### Solo una herramienta
 
+**Linux / macOS:**
 ```bash
 ./install.sh --opencode-only
 ./install.sh --claude-only
 ```
 
+**Windows:**
+```powershell
+.\install.ps1 -OpencodeOnly
+.\install.ps1 -ClaudeOnly
+```
+
 ### Proyecto actual (commit compartido con el equipo)
 
+**Linux / macOS:**
 ```bash
 ./install.sh --project
+```
+
+**Windows:**
+```powershell
+.\install.ps1 -Project
 ```
 
 Instala en `./.opencode/skills/` y `./.claude/skills/`. Commit esos directorios si el equipo debe compartirlas.
 
 ### Copia en vez de symlink / desinstalar
 
+**Linux / macOS:**
 ```bash
 ./install.sh --copy
 ./install.sh --uninstall
 ./install.sh --help
+```
+
+**Windows:**
+```powershell
+.\install.ps1 -Copy
+.\install.ps1 -Uninstall
+.\install.ps1 -Help
 ```
 
 ### Uso
@@ -124,8 +165,9 @@ Claude Code:
 
 ## Desarrollo local y validación
 
-Requisitos: `bash`, `git`, `ln`, `cp`.
+Requisitos: `bash`, `git`, `ln`, `cp` (Linux/macOS) / `PowerShell 5.1+`, `git` (Windows).
 
+**Linux / macOS:**
 ```bash
 # Validar que toda skill tenga frontmatter mínimo
 grep -H "^name:\|^description:\|^license:\|^compatibility:" */SKILL.md
@@ -137,6 +179,21 @@ find /tmp/opencode/nexora-check -maxdepth 4 | sort
 # Probar instalación de proyecto
 mkdir -p /tmp/opencode/proj-check && cd /tmp/opencode/proj-check
 NEXORA_SKILLS_SRC=/home/saaarmyx/Desktop/Nexora/NexoraSkills bash /home/saaarmyx/Desktop/Nexora/NexoraSkills/install.sh --project
+```
+
+**Windows (PowerShell):**
+```powershell
+# Validar que toda skill tenga frontmatter mínimo
+Get-ChildItem */SKILL.md | ForEach-Object { Select-String -Pattern "^name:|^description:|^license:|^compatibility:" $_ }
+
+# Probar el instalador sin tocar tu config real
+$env:HOME = "C:\tmp\opencode\nexora-check"; $env:NEXORA_SKILLS_SRC = $PWD; .\install.ps1 -Global
+Get-ChildItem C:\tmp\opencode\nexora-check -Recurse -Depth 4 | Sort-Object FullName
+
+# Probar instalación de proyecto
+New-Item -ItemType Directory -Path C:\tmp\opencode\proj-check -Force | Out-Null
+Set-Location C:\tmp\opencode\proj-check
+$env:NEXORA_SKILLS_SRC = "C:\Users\Saaarmyx\Desktop\NexoraSkills"; . "C:\Users\Saaarmyx\Desktop\NexoraSkills\install.ps1" -Project
 ```
 
 Reglas para agregar una skill:
