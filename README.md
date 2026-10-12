@@ -65,8 +65,14 @@ curl -fsSL https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/in
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 | iex
+# Opción 1: Descargar y ejecutar (recomendado)
+irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 -OutFile install.ps1; .\install.ps1
+
+# Opción 2: Como script block
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1)))
 ```
+
+> **Nota:** En PowerShell, `irm | iex` no funciona para scripts con parámetros. Usa las opciones de arriba.
 
 Esto clona a `~/.local/share/nexora-skills` (Linux/macOS) o `~\.local\share\nexora-skills` (Windows) y enlaza las 5 skills en:
 
@@ -108,10 +114,14 @@ git clone https://github.com/Nexora-Company/NexoraSkills.git
 ./install.sh --claude-only
 ```
 
-**Windows:**
+**Windows (desde clon local o descargado):**
 ```powershell
 .\install.ps1 -OpencodeOnly
 .\install.ps1 -ClaudeOnly
+
+# One-liner script block:
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -OpencodeOnly
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -ClaudeOnly
 ```
 
 ### Proyecto actual (commit compartido con el equipo)
@@ -121,9 +131,12 @@ git clone https://github.com/Nexora-Company/NexoraSkills.git
 ./install.sh --project
 ```
 
-**Windows:**
+**Windows (desde clon local o descargado):**
 ```powershell
 .\install.ps1 -Project
+
+# One-liner script block:
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -Project
 ```
 
 Instala en `./.opencode/skills/` y `./.claude/skills/`. Commit esos directorios si el equipo debe compartirlas.
@@ -137,11 +150,15 @@ Instala en `./.opencode/skills/` y `./.claude/skills/`. Commit esos directorios 
 ./install.sh --help
 ```
 
-**Windows:**
+**Windows (desde clon local o descargado):**
 ```powershell
 .\install.ps1 -Copy
 .\install.ps1 -Uninstall
 .\install.ps1 -Help
+
+# One-liner script block:
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -Copy
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -Uninstall
 ```
 
 ### Uso
@@ -194,6 +211,9 @@ Get-ChildItem C:\tmp\opencode\nexora-check -Recurse -Depth 4 | Sort-Object FullN
 New-Item -ItemType Directory -Path C:\tmp\opencode\proj-check -Force | Out-Null
 Set-Location C:\tmp\opencode\proj-check
 $env:NEXORA_SKILLS_SRC = "C:\Users\Saaarmyx\Desktop\NexoraSkills"; . "C:\Users\Saaarmyx\Desktop\NexoraSkills\install.ps1" -Project
+
+# One-liner script block (sin descargar):
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1))) -Project -Copy
 ```
 
 Reglas para agregar una skill:

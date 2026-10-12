@@ -28,8 +28,12 @@
     Shows this help.
 
 .EXAMPLE
-    # One-liner (global, both tools)
-    irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 | iex
+    # One-liner (global, both tools) - download and run
+    irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 -OutFile install.ps1; .\install.ps1
+
+.EXAMPLE
+    # One-liner as script block (global, both tools)
+    & ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1)))
 
 .EXAMPLE
     # From local clone
@@ -95,7 +99,10 @@ Opciones:
   -Help, -h         Muestra esta ayuda.
 
 One-liner (global, ambas herramientas):
-  irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 | iex
+  irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1 -OutFile install.ps1; .\install.ps1
+
+  # O como script block:
+  & ([scriptblock]::Create((irm https://raw.githubusercontent.com/Nexora-Company/NexoraSkills/main/install.ps1)))
 
 Desde clon local:
   git clone https://github.com/Nexora-Company/NexoraSkills.git
